@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Musée du Louvre{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    {% endblock %}
+</head>
+<body>
+<h1>{{ block ('title') }}</h1>
+
+{% block menu %}
+    <header class="page-header">
+    <ul>
+        <li><a href="{{ path('homepage') }}">Accueil</a></li>
+        <li><a href="#">Informations pratiques</a></li>
+        <li><a href="#">Expostions</a></li>
+        <li><a href="#">Oeuvre</a></li>
+        <li><a href="#">Arts & Education</a></li>
+    </ul>
+    </header>
+{% endblock %}
+{% block body %}
+
+        <ul>
+            <li><a href="{{ path('formBillet') }}">Réservation</a></li>
+        </ul>
+
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+</body>
+</html>

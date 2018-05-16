@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block menu %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6 col-md-offset-3">
+       <a href="{{ path('homepage') }}">Précédent</a>
+        </div>
+    </div>
+
+    <div class="row">
+        Tarif normal : 16€<br>
+    Tarif réduit : étudiant, employé du Musée, service du Ministre de la Culture, militaire (10€)<br>
+    Tarif enfant : de 4 à 12 ans (8€)<br>
+    Tarif senior : à partir de 60 ans (12€)<br>
+    Pour les enfants de moins de 4 ans, l'entrée est gratuite. Vous n'avez pas à prendre de billets.<br>
+    </div>
+
+    <div class="row">
+
+
+    {{ form_start (form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="application/javascript"></script>
+{% endblock %}

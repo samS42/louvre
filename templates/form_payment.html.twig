@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <ul>
+        <li><a href="{{ path('formInfos', {'id': id, 'nbTicket': nbTicket}) }}">Précédent</a></li>
+    </ul>
+
+
+    {% block inner_body %}{% endblock %}
+
+{% endblock %}
