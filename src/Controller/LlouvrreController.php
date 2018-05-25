@@ -8,15 +8,15 @@
 
 namespace App\Controller;
 
-use App\Entity\NewOrder;
-use App\Entity\User;
-use App\Form\NewOrderType;
-use App\Form\UserType;
-use App\Form\UserTypeCollection;
+
+use App\Entity\Orders;
+use App\Entity\Users;
+use App\Form\OrdersType;
+use App\Form\UsersType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Tests\Node\Obj;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class LlouvrreController extends AbstractController
@@ -34,25 +34,25 @@ class LlouvrreController extends AbstractController
      */
     public function addBilletFormAction(Request $request)
     {
-        $newOrder = new NewOrder();
+        $order = new Orders();
 
-        $form = $this->get('form.factory')->create(NewOrderType::class, $newOrder);
+        $form = $this->get('form.factory')->create(OrdersType::class, $order);
 
         if ($request->isMethod('POST') && $form->handleRequest($request)->isValid())
         {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($newOrder);
+            $em->persist($order);
             $em->flush();
 
-            $id = $newOrder->getId();
+            $id = $order->getId();
             $numberId = 'co' . $id;
-            $newOrder->setOrderNumber($numberId);
+            $order->setOrderNumber($numberId);
 
-            $em->persist($newOrder);
+            $em->persist($order);
             $em->flush();
 
                 return $this->redirectToRoute('formInfos', array(
-                    'id' => $newOrder->getId(),
+                    'id' => $order->getId(),
                     ));
         }
 
@@ -60,80 +60,93 @@ class LlouvrreController extends AbstractController
             'form' => $form->createView(),
         ));
     }
-
+    
     /**
-     * @Route("/reservation/form/{id}", name="formInfos")
+     * @Route("/reservation/recap/{id}", name="recap")
      */
-    public function addInfosFormsAction($id,Request $request)
+    public function displayOrder($id)
     {
-
         $em = $this->getDoctrine()->getManager();
-        $newOrder = $em->getRepository(NewOrder::class)->find($id);
-
-        //retrieve nbTicket
-        $nbTicket = $newOrder->getNbTicket();
-        $ticket = $newOrder->getTicket();
-
-        $users = new ArrayCollection();
-        $user = new User();
-
-        for ($i = 0; $i < $nbTicket; $i++)
-        {
-            $users->add(new User);
-        }
-
-            $form = $this->get('form.factory')->create(UserTypeCollection::class, $users);
-
-            if ($request->isMethod('POST') && $form->handleRequest($request)->isValid())
-            {
-                //Create many to one relation link
-                $user->setNewOrder($newOrder);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->persist($newOrder);
-                $em->flush();
-
-                //retrieve boolean discount
-                $discount = $user->getDiscount();
-
-                //check ticket
-                if ($ticket == "journée")
-                {
-                    //check is there an application for discount
-                    if ($discount == 0)
-                    {
-                        $birthdate = $user->getBirthDate();
-                        $typePrice = $user->differenceBetweenBirthdateAndNow($birthdate);
-                    } else {
-                        $typePrice = "Tarif réduit";
-                    }
-                }
-                else
-                {
-                    $typePrice = "Tarif demi-journée";
-                }
-
-                //set price field
-                $price = $user->typeOfPriceToPrice($typePrice);
-
-                //add typePrice and price for User table
-                $user->setTypePrice($typePrice);
-                $user->setPrice($price);
-                $em->persist($user);
-                $em->flush();
-
-                return $this->redirectToRoute('formPayment', array(
-                    'id' => $user->getId(),
-                    'nbTicket' => $nbTicket,
-
-                ));
-            }
-
-            return $this->render('form_infos.html.twig', array(
-                'form' => $form->createView(),
-            ));
+        $order = $em->getRepository(Orders::class)->find($id);
+        
+        return $this->renderView('recap.html.twig', array(
+            'order' => $order
+        ));
     }
+
+//     /**
+//      * @Route("/reservation/form/{id}", name="formInfos")
+//      */
+//     public function addInfosFormsAction($id,Request $request)
+//     {
+
+//         $em = $this->getDoctrine()->getManager();
+//         $order = $em->getRepository(Orders::class)->find($id);
+
+//         //retrieve nbTicket
+//         $nbTicket = $order->getNbTicket();
+//         $ticket = $order->getTicket();
+
+//         $users = new ArrayCollection();
+//         $user = new Users();
+
+//         for ($i = 0; $i < $nbTicket; $i++)
+//         {
+//             $users->add(new Users);
+//         }
+
+//             $form = $this->get('form.factory')->create(UserTypeCollection::class, $users);
+
+//             if ($request->isMethod('POST') && $form->handleRequest($request)->isValid())
+//             {
+//                 //Create many to one relation link
+//                 $user->setNewOrder($newOrder);
+
+//                 $em = $this->getDoctrine()->getManager();
+//                 $em->persist($user);
+//                 $em->persist($newOrder);
+//                 $em->flush();
+
+//                 //retrieve boolean discount
+//                 $discount = $user->getDiscount();
+
+//                 //check ticket
+//                 if ($ticket == "journée")
+//                 {
+//                     //check is there an application for discount
+//                     if ($discount == 0)
+//                     {
+//                         $birthdate = $user->getBirthDate();
+//                         $typePrice = $user->differenceBetweenBirthdateAndNow($birthdate);
+//                     } else {
+//                         $typePrice = "Tarif réduit";
+//                     }
+//                 }
+//                 else
+//                 {
+//                     $typePrice = "Tarif demi-journée";
+//                 }
+
+//                 //set price field
+//                 $price = $user->typeOfPriceToPrice($typePrice);
+
+//                 //add typePrice and price for User table
+//                 $user->setTypePrice($typePrice);
+//                 $user->setPrice($price);
+//                 $em->persist($user);
+//                 $em->flush();
+
+//                 return $this->redirectToRoute('formPayment', array(
+//                     'id' => $user->getId(),
+//                     'nbTicket' => $nbTicket,
+
+//                 ));
+//             }
+
+//             return $this->render('form_infos.html.twig', array(
+//                 'form' => $form->createView(),
+//             ));
+//     }
 
     /**
      * @Route("/reservation/payment/{id}/{nbTicket}", name="formPayment")
@@ -141,7 +154,7 @@ class LlouvrreController extends AbstractController
     public function paymentAction($id, $nbTicket)
     {
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository(User::class)->find($id);
+        $user = $em->getRepository(Users::class)->find($id);
 
         $em->flush();
 
